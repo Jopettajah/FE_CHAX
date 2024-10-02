@@ -71,3 +71,4 @@ ASMC SetGoldEvent|1
 EMS modules, fill start address based on your setup:
 DeclSaveChunk($????, MSa_WalletChunkSize, saveGold, loadGold) //Save
 DeclSaveChunk($????, MSu_WalletChunkSize, saveGold, loadGold) //Suspend
+*/
