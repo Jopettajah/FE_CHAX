@@ -23,6 +23,9 @@ WORD 0x00000001 // 1 = C-Rank, 2 = B-Rank...
 GiveGoldTextId: //TextId for the text displayed when selecting which unit to give gold to
 WORD 0x0000086D //"Select which unit to steal from", change this to a custom id
 
+startingGoldAmt: //Amount of gold units are loaded in with
+WORD 500
+
 ALIGN 4
 #include "C_Code.lyn.event"
 
