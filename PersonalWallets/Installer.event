@@ -1,0 +1,70 @@
+// Depencies: EMS, UnitActionRework
+#define walletTableRam 0x0203F540 //some free spot on ram, needs to be at least 10e bytes
+#define MSu_WalletChunkSize $10E //(62+20+50)*2
+#define MSa_WalletChunkSize $7C //62*2
+
+ALIGN 4
+maxWalletValue:
+WORD 0x0000C350 //How much gold an unit can hold, max: 0x0000FFFF (65535)
+   
+ALIGN 4
+gWalletTableRam:
+WORD walletTableRam
+
+//Slots for pActionRoutineTable, put ActionRoutine(ActionStealGold) & ActionRoutine(ActionGiveGold) to whatever free slots
+UNIT_ACTION_STEAL_GOLD:
+WORD 0x0000002C 
+UNIT_ACTION_GIVE_GOLD:
+WORD 0x0000002D
+ 
+minSupportRank: //minimum support-rank for give gold command usability (units with the ability to steal ignore rank requirements)
+WORD 0x00000001 // 1 = C-Rank, 2 = B-Rank...
+
+GiveGoldTextId: //TextId for the text displayed when selecting which unit to give gold to
+WORD 0x0000086D //"Select which unit to steal from", change this to a custom id
+
+ALIGN 4
+#include "C_Code.lyn.event"
+
+
+/*
+Things you have to install elsewhere:
+
+MSS Macro, put this to mss_def.s:
+
+.equ walletTableRam, 0x0203F540
+
+.macro draw_gold_at, tile_x, tile_y
+  mov 	  r1, r8
+  mov	  r0, #0xB
+  ldrb    r1, [r1, r0]  @deploy byte
+  cmp	  r1, #0x54
+  blt	  Mult
+  sub	  r1, #0x26
+  Mult:
+  lsl	  r1, #1
+  ldr     r0, =walletTableRam
+  ldrh	  r0, [r0, r1]
+  mov	  r1, #Blue
+  draw_number_at \tile_x, \tile_y
+.endm
+
+Unit menu command usability & effect routines, inject with whatever:
+GoldStealCommandUsability GoldStealCommandEffect
+GoldGiveCommandUsability GoldGiveCommandEffect
+
+AMSC's setting/getting gold values for eventing:
+ASMC SetGoldEvent|1
+Slot 1: unit index, slot 2: gold value
+ASMC GetGoldEvent|1
+Slot 1: unit index, returns value to slot 2
+
+Example (Copy first player unit's gold to first enemy unit):
+SVAL 1 0x1
+ASMC GetGoldEvent|1
+SVAL 1 0x81
+ASMC SetGoldEvent|1
+
+EMS modules, fill start address based on your setup:
+DeclSaveChunk($????, MSa_WalletChunkSize, saveGold, loadGold) //Save
+DeclSaveChunk($????, MSu_WalletChunkSize, saveGold, loadGold) //Suspend
