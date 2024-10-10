@@ -1,0 +1,5 @@
+
+#define NewSoundRoom $A20E74 // Change this to new address/label if you repointed SoundRoomTable
+
+ALIGN 4
+#include "C_Code.lyn.event"
