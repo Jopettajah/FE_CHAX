@@ -50,6 +50,11 @@ MSS Macro, put this to mss_def.s:
   ldrh	  r0, [r0, r1]
   mov	  r1, #Blue
   draw_number_at \tile_x, \tile_y
+  
+  ldr     r0, =(tile_origin+(0x20*2*\tile_y)+(2*(\tile_x+1)))
+  mov     r1, #Yellow
+  mov     r2, #30 @Big G
+  blh     DrawSpecialUiChar
 .endm
 
 Unit menu command usability & effect routines, inject with whatever:
